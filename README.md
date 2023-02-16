@@ -1,0 +1,1 @@
+该项目主要用于学习使用 github action 部署一个简单的 go http 应用
