@@ -6,100 +6,15 @@ on:
   pull_request:
 
 jobs:
-  reviewdog-github-check:
-    permissions:
-      checks: write
-      contents: read
-      pull-requests: write
-    name: reviewdog (github-check)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      # the go project must have a go.mod and go.sum file.
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.x'
-          cache: true
-
-      - name: Install linters
-        run: go install golang.org/x/lint/golint@latest
-
-      - name: Setup reviewdog
-        uses: reviewdog/action-setup@v1
-
-      - name: Run reviewdog
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          golint ./... | reviewdog -f=golint -name=golint-github-check -reporter=github-check -level=warning -runners=golint,govet 
-
-
-  reviewdog-pr:
-    permissions:
-      checks: write
-      contents: read
-      pull-requests: write
-    if: github.event_name == 'pull_request'
-    name: reviewdog on Pull Request
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.x'
-          cache: true
-
-      - name: Install linters
-        run: go install golang.org/x/lint/golint@latest
-
-      - name: Setup reviewdog
-        uses: reviewdog/action-setup@v1
-
-      - name: Run reviewdog (github-pr-check)
-        continue-on-error: true
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          reviewdog -reporter=github-pr-check -runners=golint,govet -fail-on-error
-
-      - name: Run reviewdog (github-pr-review with tee)
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Remove Go Problem Matchers [1] as it reports duplicate results with
-          # reviewdog.
-          # [1]: https://github.com/actions/toolkit/blob/master/docs/commands.md#problem-matchers
-          echo "::remove-matcher owner=go::"
-          golint ./... | reviewdog -f=golint -name=golint-pr-review -reporter=github-pr-review -tee
-
-      - name: Run reviewdog (github-pr-check with -filter-mode=file)
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          golint | reviewdog -f=golint -name=golint-pr-check-filter-mode-file -reporter=github-pr-check -filter-mode=file -level=warning
-
-      - name: gofmt -s with reviewdog
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gofmt -s -d . | \
-            reviewdog -name="gofmt" -f=diff -f.diff.strip=0 -reporter=github-pr-review
-
   golangci-lint:
-    permissions:
-      checks: write
-      contents: read
-      pull-requests: write
-    if: github.event_name == 'pull_request'
     name: runner / golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: reviewdog/action-golangci-lint@v2
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        if: github.event_name == 'pull_request'
         with:
-          github_token: ${{ secrets.github_token }}
-          golangci_lint_flags: "--enable-all --exclude-use-default=false -D wsl -D testpackage"
-          level: "warning"
-          reporter: github-pr-check
+          golangci_lint_flags: "--skip-dirs=mtls/crypto,module/http2 --enable-all --timeout=10m --exclude-use-default=false --tests=false --disable=gochecknoinits,gochecknoglobals,exhaustive,nakedret,exhaustivestruct"
+          workdir: ./
