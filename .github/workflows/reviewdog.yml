@@ -25,9 +25,9 @@ jobs:
         run: go install golang.org/x/lint/golint@latest
 
       - name: Setup reviewdog
-        # uses: reviewdog/action-setup@v1
-        run: |
-          go install ./cmd/reviewdog
+        uses: reviewdog/action-setup@v1
+#        run: |
+#          go install ./cmd/reviewdog
 
       - name: Run reviewdog
         env:
