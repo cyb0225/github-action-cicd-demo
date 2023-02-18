@@ -6,23 +6,19 @@ on:
   pull_request:
 
 jobs:
-  golangci-lint-push:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        if: github.event_name == 'push'
-        with:
-          version: latest
-
-  golangci-lint-pr:
+  golangci-lint:
     name: runner / golangci-lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+        # push lint
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        if: github.event_name == 'push'
+        with:
+          version: latest
+        # pull request lint
       - name: golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         if: github.event_name == 'pull_request'
