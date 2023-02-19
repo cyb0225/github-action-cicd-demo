@@ -18,5 +18,11 @@ func main() {
 		}()
 	}
 
+	FuncA() // do not deal with the error
+
 	wg.Wait()
+}
+
+func FuncA() error {
+	return nil
 }
