@@ -10,32 +10,43 @@ jobs:
     name: reviewdog
     runs-on: ubuntu-latest
     steps:
+#     拉取代码
       - name: Catch repo code
         uses: actions/checkout@v3
-      - name: Check code
-        run:  ls -al
+#      - name: Check code
+#        run:  ls -al
+#     下载 golang 环境
       - name: Setup golang env
         uses: actions/setup-go@v3
-      - name: Check golang env
-        run:  go env
-      - name: Run code
-        run:  go run main.go
+#      - name: Check golang env
+#        run:  go env
+#      - name: Run code
+#        run:  go run main.go
+
+#     下载 golangci-lint
       - name: Install golangci-lint And Check
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1
       - name: Check golangci-lint linters
         run: golangci-lint linters
       - name: Test golangci-lint
         run: golangci-lint run
 
+#     下载 reviewdog
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
-#      - name: Run pull-request reviewdog
-#        env:
-#          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        if:
-#
-#      - name: Run push reviewdog
+
+#     pull request 检查
+      - name: Run pull-request reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if:  github.event_name == 'pull_request'
+        run: echo "pull request"
+
+#     push  检查
+      - name: Run push reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name == 'push'
+        run: echo "push"
