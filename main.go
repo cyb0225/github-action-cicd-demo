@@ -20,7 +20,7 @@ func main() {
 		}()
 	}
 
-	_ = FuncA() // do not deal with the error
+	FuncA() // do not deal with the error
 
 	wg.Wait()
 }
