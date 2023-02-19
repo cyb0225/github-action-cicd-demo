@@ -19,3 +19,4 @@ jobs:
         with:
           version: latest
           working-directory: ./
+          issues: true # only check for new adding code
