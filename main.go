@@ -21,7 +21,7 @@ func main() {
 	}
 
 	_ = FuncA() // do not deal with the error
-
+	fmt.Println("123")
 	wg.Wait()
 }
 
