@@ -11,14 +11,16 @@ func main() {
 	wg.Add(len(arr))
 
 	for i, v := range arr {
+		index := i
+		val := v
 		go func() {
 			defer wg.Done()
 			// There is a problem with closed packages here
-			fmt.Println(i, v)
+			fmt.Println(index, val)
 		}()
 	}
 
-	FuncA() // do not deal with the error
+	_ = FuncA() // do not deal with the error
 
 	wg.Wait()
 }
