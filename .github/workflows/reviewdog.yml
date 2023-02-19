@@ -14,7 +14,6 @@ jobs:
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
-        run: reviewdog -version
       - name: Check repo code
         run: ls -al
 #      - name: Run reviewdog
