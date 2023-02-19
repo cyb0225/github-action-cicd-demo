@@ -10,10 +10,8 @@ jobs:
     name: reviewdog
     runs-on: ubuntu-latest
     steps:
-#      - uses: actions/checkout@v3 #clone my repo to this image
       - uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
       - name: Run reviewdog
       - run: reviewdog -version
-#      - run: ls -al
