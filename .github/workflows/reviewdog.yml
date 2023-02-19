@@ -1,0 +1,18 @@
+name: reviewdog
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  reviewdog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 #clone my repo to this image
+      - uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+      - run: reviewdog -version
+      - run: echo "Hello World"
+      - run: ls -al
