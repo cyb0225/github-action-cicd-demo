@@ -14,5 +14,10 @@ jobs:
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
-      - name: Run reviewdog
         run: reviewdog -version
+      - name: Check repo code
+        run: ls -al
+#      - name: Run reviewdog
+#        env:
+#          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
